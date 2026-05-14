@@ -7,6 +7,7 @@ from database import get_db
 from routers.users import get_current_user
 from typing import List, Optional
 from datetime import date
+from uuid import UUID
 from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -90,7 +91,7 @@ def generate_events_report(
     )
 
 @router.get("/{event_id}", response_model=schemas.EventResponse)
-def get_event(event_id: str, db: Session = Depends(get_db)):
+def get_event(event_id: UUID, db: Session = Depends(get_db)):
     event = db.query(models.Event).filter(models.Event.id == event_id).first()
     if not event:
         raise HTTPException(status_code=404, detail="Wydarzenie nie istnieje")
@@ -132,7 +133,7 @@ def create_event(
 
 @router.put("/{event_id}", response_model=schemas.EventResponse)
 def update_event(
-    event_id: str,
+    event_id: UUID,
     event_update: schemas.EventUpdate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
@@ -169,7 +170,7 @@ def update_event(
 
 @router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_event(
-    event_id: str, 
+    event_id: UUID, 
     db: Session = Depends(get_db), 
     current_user: models.User = Depends(get_current_user)
 ):

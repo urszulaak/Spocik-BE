@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from uuid import UUID
 from datetime import date
 from typing import Optional, Dict
@@ -28,6 +28,15 @@ class EventUpdate(BaseModel):
     type: Optional[str] = None
     date: Optional[date] = None
     description: Optional[str] = None
+
+    @field_validator('date', mode='before')
+    @classmethod
+    def parse_date(cls, v):
+        if v is None or v == '':
+            return None
+        if isinstance(v, str):
+            return date.fromisoformat(v)
+        return v
 
 class Link(BaseModel):
     href: str
